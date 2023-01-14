@@ -5,77 +5,61 @@
 
 using namespace std;
 
-int validateDate(string date) {
-
-    //Format data dd/mm/yyyy
-    char chr[11]; //max 10+1 elem exista in formatul dorit al datei
-    date.erase(std::remove_if(date.begin(), date.end(), ::isspace), date.end()); //sterge spatii albe
-    date.resize(10); // resize la valoarea char 
-    strcpy(chr, date.c_str());
-    char delim[] = "/";
-    int year=-1, month=-1, day=-1;
-
-    char* token = strtok(chr, delim);
-    while (token) {
-        for (int i = 0; i < strlen(token); i++)
-            if (isdigit(token[i]) == 0)
-                return 0;
-        if (day == -1)
-            day = atoi(token);
-        if (month == -1)
-            month = atoi(token);
-        year = atoi(token);
-
-        token = strtok(NULL, delim);
-    }
-
-    if (1000 <= year <= 3000)
-    {
-        if ((month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) && day > 0 && day <= 31)
-            return 1;
-        else
-            if (month == 4 || month == 6 || month == 9 || month == 11 && day > 0 && day <= 30)
-                return 1;
-            else
-                if (month == 2)
-                {
-                    if ((year % 400 == 0 || (year % 100 != 0 && year % 4 == 0)) && day > 0 && day <= 29)
-                        return 1;
-                    else if (day > 0 && day <= 28)
-                        return 1;
-                    else
-                        return 0;
-                }
-                else
-                    return 0;
-    }
-    else
+int validateDate(const std::string& date) {
+    // verif. format data (dd/mm/yyyy)
+    if (date.length() != 10 || date[2] != '/' || date[5] != '/') {
         return 0;
-}
+    }
+    // extragere dd, mm, yyyy
+    int day = stoi(date.substr(0, 2));
+    int month = stoi(date.substr(3, 2));
+    int year = stoi(date.substr(6, 4));
 
-int validateHour(string hour) {
-    char chr[6]; //max 5+1 elem exista in formatul dorit al datei
-    hour.erase(std::remove_if(hour.begin(), hour.end(), ::isspace), hour.end()); 
-    hour.resize(5);
-    strcpy(chr, hour.c_str());
-    char delim[] = ":";
-    int hh = -1, mm = -1;
-
-    char* token = strtok(chr, delim);
-    while (token) {
-        for (int i = 0; i < strlen(token); i++)
-            if (!isdigit(token[i]))
-                return 0;
-        if (hh == -1)
-            hh = atoi(token);
-        mm = atoi(token);
-
-        token = strtok(NULL, delim);
+    if (month < 1 || month > 12) {
+        return 0;
     }
 
-    if (hh >= 0 && hh <= 24)
-        if (mm >= 0 && mm <= 59)
-            return 1;
-        else return 0;
-    else return 0;
+    if (day < 1 || day > 31) {
+        return 0;
+    }
+
+    if (month == 2) {
+        if (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) {
+            if (day > 29) {
+                return 0;
+            }
+        }
+        else {
+            if (day > 28) {
+                return 0;
+            }
+        }
+    }
+    else if (month == 4 || month == 6 || month == 9 || month == 11) {
+        if (day > 30) {
+            return 0;
+        }
+    }
+
+    if (year == 0) {
+        return 0;
+    }
+    return 1;
 }
+
+
+int validateHour(const std::string& hour) {
+    // verif. format hour (hh:mm)
+    if (hour.size() != 5 || hour[2] != ':') {
+        return 0;
+    }
+    // extragere hh, mm
+    int hh = stoi(hour.substr(0, 2));
+    int mm = stoi(hour.substr(3, 2));
+
+    if (hh < 0 || hh > 23 || mm < 0 || mm > 59) {
+        return 0;
+    }
+    return 1;
+}
+

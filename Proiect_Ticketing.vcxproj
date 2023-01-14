@@ -128,15 +128,28 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Bilet.cpp" />
+    <ClCompile Include="Bilet_extended.cpp" />
     <ClCompile Include="Eveniment.cpp" />
+    <ClCompile Include="Eveniment_extended.cpp" />
     <ClCompile Include="Locatie.cpp" />
+    <ClCompile Include="Locatie_extended.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Rezervari.cpp" />
+    <ClCompile Include="Tokens.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bilet.h" />
+    <ClInclude Include="Bilet_extended.h" />
     <ClInclude Include="Eveniment.h" />
+    <ClInclude Include="Eveniment_extended.h" />
     <ClInclude Include="Functions.h" />
     <ClInclude Include="Locatie.h" />
+    <ClInclude Include="Locatie_extended.h" />
+    <ClInclude Include="Rezervari.h" />
+    <ClInclude Include="Tokens.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="tickets.data" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

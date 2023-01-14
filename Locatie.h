@@ -2,6 +2,7 @@
 #define _CRT_SECURE_NO_DEPRECATE
 #define _CRT_SECURE_NO_WARNINGS
 #include <string>
+#include <vector>
 #include <iostream>
 
 using namespace std;
@@ -61,13 +62,13 @@ public:
 		return s;
 	}
 
-	void set_nrLocuri(int nrLocuri) {
+	virtual void set_nrLocuri(int nrLocuri) {
 		if (nrLocuri > 0 && nrLocuri != this->nrLocuri) {
 			this->nrLocuri = nrLocuri;
 		}
 	}
 
-	void set_nrRanduri(int nrRanduri) {
+	virtual void set_nrRanduri(int nrRanduri) {
 		if (nrRanduri > 0)
 			this->nrRanduri = nrRanduri;
 	}

@@ -4,11 +4,17 @@
 #include <iostream>
 #include <stdlib.h>
 #include <algorithm>
+#include <ctype.h>
+#include <fstream>
 #include <conio.h>
 #include "Locatie.h"
 #include "Eveniment.h"
 #include "Bilet.h"
 #include "Functions.h"
+#include "Locatie_extended.h"
+#include "Bilet_extended.h"
+#include "Eveniment_extended.h"
+#include "Tokens.h"
 
 using namespace std;
 
@@ -77,29 +83,97 @@ istream& operator>>(istream& f, Bilet& bil) {
 }
 
 
-struct BileteVandute {
-	string denumire, data, ora, zona;
-	int rand, nrScaun, CIBilet;
-};
-
-
 //Running code
 
 
-int main()
+int main(int argc, char* argv[])
 {
+
+	char c;
+	Tokens tk;
+	//tk.reset();
+	//tk.init();
+	//tk.set_iter_to_first_unused_ticket();
+	Bilet_extended bil(100000, 999999);
+	vector <Locatie*> locatie;
+	Eveniment ev;
+
+	if (argc == 2) {
+		string file_name = argv[1];
+		ifstream file(file_name);
+
+		string denumire, data, ora, zona;
+		int nrMaxLoc, nrRanduri, nrBilete;
+		char chr;
+
+		if (file.fail()) {
+			cerr << "Fisierul nu a putut fi incarcat! Abort!" << endl;
+			return 1;
+		}
+		else {
+			file >> denumire;
+			if (denumire == "" || denumire == " ") cerr << "Denumirea evenimentului nu poate fi nula!" << endl;
+			file >> data;
+			if (!validateDate(data)) cerr << "Data evenimentului este invalida" << endl;
+			file >> ora;
+			if (!validateHour(ora)) cerr << "Ora evenimentului este invalida" << endl;
+
+			ev.set_denumire(denumire);
+			ev.set_data(data);
+			ev.set_ora(ora);
+
+			do {
+				file >> zona;
+				if (zona == "" || denumire == " ") cerr << "Denumirea locatiei nu poate fi nula" << endl;
+				file >> nrMaxLoc;
+				if (nrMaxLoc <= 0) cerr << "Nr de scaune nu poate fi <= decat 0" << endl;
+				file >> nrRanduri;
+				if (nrRanduri <= 0) cerr << "Nr de randuri nu poate fi <= decat 0" << endl;
+
+				Locatie* loc = new Locatie();
+				loc->set_nrLocuri(nrMaxLoc);
+				loc->set_nrRanduri(nrRanduri);
+				char* cstr = new char[zona.length() + 1];
+				for (int i = 0; i < zona.length(); i++)
+					cstr[i] = zona[i];
+				cstr[zona.length()] = '\0';
+				loc->set_zona(cstr);
+				loc->generate_nrScaun();
+				locatie.push_back(loc);
+
+
+				int contor = 1;
+				for (int i = 0; i < nrRanduri; i++) {
+					for (int j = 0; j < nrMaxLoc / nrRanduri + 1; j++) {
+						if (contor > nrMaxLoc) break;
+						int ci;
+						cout << "ok";
+						do {
+							ci = bil.random();
+							if (tk.checkBilet(ci) == 0) break;
+						} while (true);
+						tk.push_ticket(denumire, data, ora, zona, i + 1, contor, ci);
+						contor++;
+					}
+					if (contor >= nrMaxLoc)
+						break;
+				}
+
+				file >> chr;
+				chr = tolower(chr);
+				if (chr == 'n') break;
+			} while (true);
+			file.close();
+		}
+	}
+
+
 	int nrMaxLoc, nrRanduri, nrBilete;
 	string data, ora, denumire, zona;
 
-	char c;
-	vector <Locatie*> locatie;
-	vector <vector<int>> BileteZona;
-	vector <string> Zone;
-	vector <BileteVandute> Biletele;
-	Eveniment ev;
 
 	start:
-	system("CLS");
+	system("CLS"); //clear screen command
 	//Optiuni meniu
 	cout << "================================================================" << endl;
 	cout << "                        The ticketing app                       " << endl;
@@ -124,6 +198,13 @@ int main()
 	switch (c) {
 
 		case '1': {
+
+			tk = Tokens();
+			locatie.clear();
+			ev.reset();
+			tk.reset();
+
+
 			cout << "Introduceti urmatoarele date referitoare la eveniment:" << endl;
 
 			do {
@@ -183,19 +264,22 @@ int main()
 				loc->generate_nrScaun();
 				locatie.push_back(loc);
 
-				Zone.push_back(loc->get_zona_as_string());
-				vector <int> aux;
-				for (int i = 0; i < nrMaxLoc; i++) {
-					reiterate:
-					Bilet bil(100000, 999999);
-					bil.random();
-					int CI = bil.get_CIBilet();
-					if (find(aux.begin(), aux.end(), CI) != aux.end())
-						goto reiterate;
-					else aux.push_back(CI);
-				}
 
-				BileteZona.push_back(aux);
+				int contor = 1;
+				for (int i = 0; i < nrRanduri; i++) {
+					for (int j = 0; j < nrMaxLoc / nrRanduri + 1; j++) {
+						if (contor > nrMaxLoc) break;
+						int ci;
+						do {
+							ci = bil.random();
+							if (tk.checkBilet(ci) == 0) break;
+						}while(true);
+						tk.push_ticket(denumire, data, ora, zona, i+1, contor, ci);
+						contor++;
+					}
+					if (contor >= nrMaxLoc)
+						break;
+				}
 
 				recheck:
 				cout << "Doriti sa mai introduceti o locatie? (d/n): ";
@@ -210,8 +294,15 @@ int main()
 				}
 			} while (true);
 
-			cout << "Date introduse cu succes" << endl;
+			cout << endl << endl << "Date introduse cu succes" << endl;
 			cout << "-----------------------------------------------------------------" << endl << endl;
+			do {
+				char cc;
+				cout << endl << "Apasa enter sau orice tasta pentru reintoarcere la meniu ";
+				cc = _getch();
+				if (cc)
+					break;
+			} while (true);
 			goto start;
 		}
 
@@ -233,7 +324,7 @@ int main()
 				cout << "> Zona: " << locatie[i]->get_zona_as_string() << endl;
 				cout << "> Nr. locuri: " << locatie[i]->get_nrLocuri() << endl;
 				cout << "> Nr. randuri: " << locatie[i]->get_nrRanduri() << endl;
-				
+
 				cout << "Amplsarea scaunelor este urmatoarea:" << endl;
 				for (int k = 0; k < locatie[i]->get_nrRanduri(); k++) {
 					cout << "Randul " << k + 1 << ": ";
@@ -263,33 +354,64 @@ int main()
 		}
 			
 		case '3': {
-			cout << endl;
-			cout << "Selectare bilete"<<endl;
-			cout << "Selectati o zona: ";
-			string zona;
-			int nr;
-			cin >> zona;
-			int contor=0;
-			for(int i=0;i<Zone.size();i++)
-				if (Zone[i] == zona) {
-					nr = i;
-					break;
-				}
-			if (BileteZona[nr].size() > 0) {
-				// ...
-			}
-			else cout << "Nu mai sunt locuri in zona " << Zone[nr] << ". Va rugam alegti o alta zona";
 
+			string msg = tk.get_ticket();
+			if (msg != "NULL")
+				cout << msg;
+			else cout << "Nu mai sunt bilete disponibile";
+			do {
+				char cc;
+				cout << endl << endl << endl << "Apasa enter sau orice tasta pentru reintoarcere la meniu ";
+				cc = _getch();
+				if (cc)
+					break;
+			} while (true);
 			goto start;
 		}
 
 		case '4': {
-			cout << "...in constructie..." << endl;
+			cout << "Bun venit la eveniment!" << endl;
+			cout << endl << "Va rugam validati biletul, introducand codul acestuia mai jos:" << endl << endl;
+			bool oki = false;
+			do {
+				string cc;	
+				int ci;
+				cout << "Codul biletului: ";
+				cin >> cc;
+				try {
+					ci = stoi(cc);
+				}
+				catch (invalid_argument) {
+					ci = -1;
+				}
+				if (ci != -1 && ci >= 100000 && ci <= 999999)
+					if (tk.checkBilet(ci) == 1) { oki = true; break; }
+					else cout << endl << endl << "Biletul nu este valid" << endl << endl;
+				else cout << endl << endl << "Acesta nu reprezinta un cod de bilet" << endl << endl;
+				cout << "--------------------------------------------------" << endl;
+				char ccc;
+				cout << endl << endl << endl << "Apasa 'r' pentru reintoarcere la meniul principal, \n\tsau orice alta tasta pentru reincercrea introducerii codului"<<endl<<endl;
+				ccc = _getch();
+				ccc = tolower(ccc);
+				if (ccc == 'r')
+					goto start;
+			} while (true);
+
+			if (oki) {
+				do {
+					char cc;
+					cout << endl << "Biletul este valid" << endl;
+					cout << endl << endl << endl << "Apasa enter sau orice tasta pentru reintoarcere la meniu ";
+					cc = _getch();
+					if (cc)
+						break;
+				} while (true);
+			}
 			goto start;
 		}
 
 		case '5': {
-			cout << endl << endl << "Multumim pentru utilizare!" << endl << endl;
+			cout << endl << endl << "Multumim pentru utilizare!" << endl << endl <<endl;
 			return 0;
 		}
 

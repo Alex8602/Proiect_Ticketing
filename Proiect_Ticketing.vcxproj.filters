@@ -27,6 +27,21 @@
     <ClCompile Include="Bilet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Locatie_extended.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Eveniment_extended.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Bilet_extended.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Rezervari.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tokens.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Locatie.h">
@@ -41,5 +56,23 @@
     <ClInclude Include="Functions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Locatie_extended.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Eveniment_extended.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Bilet_extended.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Rezervari.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tokens.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="tickets.data" />
   </ItemGroup>
 </Project>

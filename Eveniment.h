@@ -22,7 +22,7 @@ public:
 		this->denumire = denumire; 
 	}
 
-	int checkDate(string data) {
+	virtual int checkDate(string data) {
 		if (this->data < data)
 			return -1;
 		else if (this->data == data)
@@ -30,7 +30,7 @@ public:
 		else return 1;
 	}
 
-	int checkHour(string ora) {
+	virtual int checkHour(string ora) {
 		if (this->ora < ora)
 			return -1;
 		else if (this->ora == ora)
@@ -99,6 +99,10 @@ public:
 		if (strcmp(c1, c2) ==0)
 			return ev.ora;
 		else return "dif";
+	}
+
+	void reset() {
+		data = ora = denumire = "";
 	}
 
 };

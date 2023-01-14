@@ -26,8 +26,9 @@ public:
 		CIBilet = minNo;
 	}
 
-	void random() {
+	virtual int random() {
 		CIBilet = (rand() % maxNo) + minNo;
+		return CIBilet;
 	}
 
 	string convertCI_tostring() {
@@ -35,7 +36,7 @@ public:
 		return s;
 	}
 
-	int check_duplicate(int CIBilet) {
+	virtual int check_duplicate(int CIBilet) {
 		if (this->CIBilet == CIBilet)
 			return 0;
 		else return 1;
